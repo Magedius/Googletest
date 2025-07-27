@@ -1,12 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 
+interface ServerInfo {
+  port: string;
+  hostname: string;
+  uptime: number;
+  platform: string;
+  service: string;
+  revision: string;
+}
+
+interface EnvironmentInfo {
+  NODE_ENV: string;
+  PORT: string;
+  GOOGLE_CLOUD_PROJECT?: string;
+  GOOGLE_CLOUD_REGION?: string;
+}
+
 export default function Home() {
-  const { data: serverInfo, isLoading: serverLoading } = useQuery({
+  const { data: serverInfo, isLoading: serverLoading } = useQuery<ServerInfo>({
     queryKey: ['/api/server-info'],
     refetchInterval: 30000,
   });
 
-  const { data: envInfo, isLoading: envLoading } = useQuery({
+  const { data: envInfo, isLoading: envLoading } = useQuery<EnvironmentInfo>({
     queryKey: ['/api/environment'],
   });
 
