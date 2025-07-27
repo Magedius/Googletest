@@ -22,13 +22,23 @@ interface EnvInfo {
   [key: string]: string | undefined;
 }
 
+interface HealthInfo {
+  status: string;
+  timestamp: string;
+  uptime: number;
+  port: string;
+  platform: string;
+  nodeVersion: string;
+  environment: string;
+}
+
 interface StatusGridProps {
   serverInfo?: ServerInfo;
   envInfo?: EnvInfo;
 }
 
 export default function StatusGrid({ serverInfo, envInfo }: StatusGridProps) {
-  const { data: healthData } = useQuery({
+  const { data: healthData } = useQuery<HealthInfo>({
     queryKey: ['/health'],
     refetchInterval: 10000, // Refresh every 10 seconds
   });
