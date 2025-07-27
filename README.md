@@ -5,23 +5,24 @@ A minimal Express.js application specifically designed to deploy successfully fr
 ## 🎯 Features
 
 - ✅ **Cloud Run Compatible**: Proper PORT environment variable handling
-- ✅ **Health Check Endpoint**: Required for Cloud Run monitoring
+- ✅ **Health Check Endpoint**: Required for Cloud Run monitoring  
 - ✅ **Graceful Shutdown**: Handles SIGTERM signals properly
-- ✅ **Docker Optimized**: Multi-stage builds with Alpine Linux
+- ✅ **Docker Optimized**: Alpine Linux with proper build process
 - ✅ **GitHub Actions**: Automated CI/CD pipeline
 - ✅ **Real-time Monitoring**: Server status and environment information
 - ✅ **Security**: Non-root user, minimal dependencies
+- ✅ **TypeScript**: Full-stack TypeScript with React frontend
 
 ## 🚀 Quick Deploy to Cloud Run
 
 ### Method 1: Deploy from Source (Recommended)
 ```bash
 # Clone the repository
-git clone <your-repo-url>
-cd cloud-run-test-app
+git clone https://github.com/Magedius/Googletest.git
+cd Googletest
 
 # Deploy directly from source
-gcloud run deploy cloud-run-test-app \
+gcloud run deploy googletest \
   --source . \
-  --region=us-central1 \
+  --region=europe-west1 \
   --allow-unauthenticated

@@ -8,6 +8,15 @@ This is a full-stack web application designed specifically for testing deploymen
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (January 27, 2025)
+
+- Fixed Dockerfile for proper Cloud Run deployment (npm ci instead of --only=production)
+- Created missing React components (welcome-hero.tsx, status-grid.tsx, config-examples.tsx)
+- Resolved all TypeScript LSP diagnostics
+- Added proper type definitions for health check responses
+- Optimized Docker build process for development dependencies during build phase
+- Updated README.md with correct deployment instructions
+
 ## System Architecture
 
 ### Frontend Architecture
