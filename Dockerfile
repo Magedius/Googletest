@@ -7,14 +7,17 @@ WORKDIR /usr/src/app
 # Copy package files first for better caching
 COPY package*.json ./
 
-# Install production dependencies only
-RUN npm install --only=production && npm cache clean --force
+# Install ALL dependencies (including dev dependencies for build)
+RUN npm ci && npm cache clean --force
 
 # Copy application code
 COPY . ./
 
-# Build the frontend
+# Build the frontend (needs dev dependencies)
 RUN npm run build
+
+# Remove dev dependencies after build
+RUN npm prune --omit=dev
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \

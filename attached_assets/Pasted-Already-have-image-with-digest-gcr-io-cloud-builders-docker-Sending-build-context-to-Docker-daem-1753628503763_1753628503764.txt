@@ -1,0 +1,52 @@
+Already have image (with digest): gcr.io/cloud-builders/docker
+Sending build context to Docker daemon  585.2kB
+Step 1/12 : FROM node:20-alpine
+20-alpine: Pulling from library/node
+9824c27679d3: Already exists
+8c59d92d6fc9: Pulling fs layer
+54225bd60196: Pulling fs layer
+a9e48ad1219d: Pulling fs layer
+a9e48ad1219d: Verifying Checksum
+a9e48ad1219d: Download complete
+54225bd60196: Verifying Checksum
+54225bd60196: Download complete
+8c59d92d6fc9: Verifying Checksum
+8c59d92d6fc9: Download complete
+8c59d92d6fc9: Pull complete
+54225bd60196: Pull complete
+a9e48ad1219d: Pull complete
+Digest: sha256:df02558528d3d3d0d621f112e232611aecfee7cbc654f6b375765f72bb262799
+Status: Downloaded newer image for node:20-alpine
+ ---> 7cdef5a33192
+Step 2/12 : WORKDIR /usr/src/app
+ ---> Running in 0dacc95a22b2
+Removing intermediate container 0dacc95a22b2
+ ---> b0366384cc09
+Step 3/12 : COPY package*.json ./
+ ---> 24f622dcac1c
+Step 4/12 : RUN npm install --only=production && npm cache clean --force
+ ---> Running in c8577e47da29
+npm warn config only Use `--omit=dev` to omit dev dependencies from the install.
+added 372 packages, and audited 373 packages in 12s
+52 packages are looking for funding
+  run `npm fund` for details
+3 low severity vulnerabilities
+To address all issues, run:
+  npm audit fix
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.5.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.5.1
+npm notice To update run: npm install -g npm@11.5.1
+npm notice
+npm warn using --force Recommended protections disabled.
+Removing intermediate container c8577e47da29
+ ---> 6f788044e94f
+Step 5/12 : COPY . ./
+ ---> e8376c425044
+Step 6/12 : RUN npm run build
+ ---> Running in 95f28b2d460f
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+sh: vite: not found
+The command '/bin/sh -c npm run build' returned a non-zero code: 127
