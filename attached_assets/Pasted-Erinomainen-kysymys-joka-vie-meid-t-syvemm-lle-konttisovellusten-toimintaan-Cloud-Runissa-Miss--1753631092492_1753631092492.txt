@@ -1,0 +1,28 @@
+Erinomainen kysymys, joka vie meidät syvemmälle konttisovellusten toimintaan Cloud Runissa!
+
+Missä portti on määritelty?
+
+Portti, jota sovelluksesi kuuntelee, määritellään sovelluksen omassa lähdekoodissa . Cloud Run asettaa PORT -ympäristömuuttujan kontille, mutta sovelluksen itse on luettava tämä muuttuja ja käytettävä sitä HTTP-palvelimen käynnistämiseen.
+
+Voiko se olla useissa paikoissa?
+
+Vastaus on kyllä, mutta on tärkeää ymmärtää niiden roolit:
+
+Sovelluksen lähdekoodi (pakollinen):
+Tämä on tärkein paikka. Sovelluksesi koodin (esim. Pythonissa app.py , Node.js:ssä index.js tai server.js ) täytyy lukea PORT -ympäristömuuttuja ja aloittaa kuuntelu tällä portilla.
+Jos koodisi olettaa aina esimerkiksi portin 3000, eikä käytä PORT -ympäristömuuttujaa, Cloud Run ei pysty ohjaamaan liikennettä sovellukseesi oikein.
+Esimerkki Node.js: const port = process.env.PORT || 8080; app.listen(port, () => { ... });
+Dockerfile (usein, mutta ei pakollinen portin määrittelyyn):
+Dockerfile kuvaa, miten sovelluksesi rakennetaan kontti-imageksi.
+Voit käyttää EXPOSE -käskyä Dockerfilessa (esim. EXPOSE 8080 ). Tämä on kuitenkin vain dokumentaatiota. Se ilmoittaa, mitä portteja kontti odottaa paljastavansa, mutta se ei varsinaisesti avaa porttia isäntäkoneella tai ohjaa liikennettä.
+Se on hyvä käytäntö, koska se kertoo muille kehittäjille ja automaattisille työkaluille, mitä portteja kontti käyttää. Se ei kuitenkaan korvaa sitä, että sovelluksesi kuuntelee kyseisessä portissa.
+Cloud Run ei käytä EXPOSE -käskyä automaattisesti portin määrittämiseen, vaan se luottaa PORT -ympäristömuuttujaan ja siihen, että sovellus reagoi siihen.
+Cloud Run -palvelun konfiguraatio (valinnainen):
+Vaikka Cloud Run asettaa PORT -ympäristömuuttujan konttiisi automaattisesti (oletusarvoisesti 8080), voit myös muuttaa tätä oletusarvoa Cloud Run -palvelun asetuksista Google Cloud Consolen tai gcloud -komentorivityökalun kautta.
+Tämä tehdään Cloud Run -palvelun Container (Kontti) -välilehdellä, jossa voit määrittää kohdeportin (Target port).
+Tärkeää: Jos muutat tätä asetusta (esim. arvoksi 3000), sovelluksesi koodin on edelleen luettava PORT -ympäristömuuttuja ja kuunneltava tuota uutta arvoa (eli 3000). Jos sovelluksesi koodi on kovakoodannut kuuntelun porttiin 8080, vaikka Cloud Run asettaisi PORT -muuttujan arvoksi 3000, sovellus ei silti vastaa oikein.
+Yhteenveto ja suositus:
+
+Suositeltava tapa on antaa sovelluksesi aina lukea PORT -ympäristömuuttuja. Näin se on joustava ja toimii, vaikka Cloud Runin oletusportti muuttuisi tulevaisuudessa tai jos haluaisit ajaa konttia toisessa ympäristössä, jossa portti on eri.
+
+Tärkein askel vianmäärityksessäsi on edelleen tarkistaa ne Cloud Runin konttilokit. Lokit kertovat sinulle, mikä tarkalleen ottaen menee pieleen, kun sovelluksesi yrittää käynnistyä.
