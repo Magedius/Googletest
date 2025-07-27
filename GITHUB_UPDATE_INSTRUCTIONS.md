@@ -50,7 +50,9 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 CMD ["npm", "start"]
 ```
 
-## 2. Puuttuvat React-komponentit
+## 2. Puuttuvat React-komponentit (KRIITTISTÄ lisätä)
+
+Sovellus kaatuu käynnistyessä koska GitHub repositoryssa puuttuvat komponentit. Lisää nämä tiedostot:
 
 ### client/src/components/welcome-hero.tsx (UUS TIEDOSTO)
 

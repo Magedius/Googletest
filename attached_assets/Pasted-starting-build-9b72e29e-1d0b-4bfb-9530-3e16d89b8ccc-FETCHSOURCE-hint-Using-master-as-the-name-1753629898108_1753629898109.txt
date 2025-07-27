@@ -1,0 +1,197 @@
+starting build "9b72e29e-1d0b-4bfb-9530-3e16d89b8ccc"
+FETCHSOURCE
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+Initialized empty Git repository in /workspace/.git/
+From https://github.com/Magedius/Googletest
+ * branch            af92c17687f01c8b664619e6de7d33bed40ac952 -> FETCH_HEAD
+HEAD is now at af92c17 Update Dockerfile
+GitCommit:
+af92c17687f01c8b664619e6de7d33bed40ac952
+BUILD
+Starting Step #0 - "Build"
+Already have image (with digest): gcr.io/cloud-builders/docker
+Sending build context to Docker daemon  842.2kB
+Step 1/13 : FROM node:20-alpine
+20-alpine: Pulling from library/node
+9824c27679d3: Already exists
+8c59d92d6fc9: Pulling fs layer
+54225bd60196: Pulling fs layer
+a9e48ad1219d: Pulling fs layer
+a9e48ad1219d: Verifying Checksum
+a9e48ad1219d: Download complete
+54225bd60196: Verifying Checksum
+54225bd60196: Download complete
+8c59d92d6fc9: Verifying Checksum
+8c59d92d6fc9: Download complete
+8c59d92d6fc9: Pull complete
+54225bd60196: Pull complete
+a9e48ad1219d: Pull complete
+Digest: sha256:df02558528d3d3d0d621f112e232611aecfee7cbc654f6b375765f72bb262799
+Status: Downloaded newer image for node:20-alpine
+ ---> 7cdef5a33192
+Step 2/13 : WORKDIR /usr/src/app
+ ---> Running in d69e1bcc28b4
+Removing intermediate container d69e1bcc28b4
+ ---> 425979c156b2
+Step 3/13 : COPY package*.json ./
+ ---> a32292758fcc
+Step 4/13 : RUN npm ci && npm cache clean --force
+ ---> Running in 6b9ddd2f9698
+npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+added 481 packages, and audited 482 packages in 16s
+64 packages are looking for funding
+  run `npm fund` for details
+11 vulnerabilities (3 low, 8 moderate)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.5.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.5.1
+npm notice To update run: npm install -g npm@11.5.1
+npm notice
+npm warn using --force Recommended protections disabled.
+Removing intermediate container 6b9ddd2f9698
+ ---> d26fd02ae36c
+Step 5/13 : COPY . ./
+ ---> cba6e769d6b5
+Step 6/13 : RUN npm run build
+ ---> Running in a164ea2b4b1d
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+vite v5.4.19 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 1665 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                   0.63 kB │ gzip:  0.38 kB
+../dist/public/assets/index-DKekFVYA.css   59.88 kB │ gzip: 10.70 kB
+../dist/public/assets/index-tELpOPYR.js   284.76 kB │ gzip: 91.35 kB
+✓ built in 8.24s
+  dist/index.js  6.9kb
+⚡ Done in 6ms
+Removing intermediate container a164ea2b4b1d
+ ---> 7318e4187b93
+Step 7/13 : RUN npm prune --omit=dev
+ ---> Running in eeedac483d81
+up to date, audited 373 packages in 2s
+52 packages are looking for funding
+  run `npm fund` for details
+3 low severity vulnerabilities
+To address all issues, run:
+  npm audit fix
+Run `npm audit` for details.
+Removing intermediate container eeedac483d81
+ ---> c642dec1ed41
+Step 8/13 : RUN addgroup -g 1001 -S nodejs &&     adduser -S nextjs -u 1001
+ ---> Running in 997a96d894d6
+Removing intermediate container 997a96d894d6
+ ---> 090ddb2b5451
+Step 9/13 : RUN chown -R nextjs:nodejs /usr/src/app
+ ---> Running in 7181a0a700cf
+Removing intermediate container 7181a0a700cf
+ ---> 974a26698cfc
+Step 10/13 : USER nextjs
+ ---> Running in 587d1d5ea918
+Removing intermediate container 587d1d5ea918
+ ---> 4d8b3092074e
+Step 11/13 : EXPOSE 8080
+ ---> Running in f1b69f61c1d7
+Removing intermediate container f1b69f61c1d7
+ ---> b06a1abc009f
+Step 12/13 : HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3   CMD node -e "const http = require('http'); http.get('http://localhost:' + (process.env.PORT || 8080) + '/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => { process.exit(1); });"
+ ---> Running in e62051630dcc
+Removing intermediate container e62051630dcc
+ ---> d4a9e275a907
+Step 13/13 : CMD ["npm", "start"]
+ ---> Running in 2100bab13511
+Removing intermediate container 2100bab13511
+ ---> b516b89ccbeb
+Successfully built b516b89ccbeb
+Successfully tagged europe-west1-docker.pkg.dev/funnelcraft/cloud-run-source-deploy/googletest/googletest:af92c17687f01c8b664619e6de7d33bed40ac952
+Finished Step #0 - "Build"
+Starting Step #1 - "Push"
+Already have image (with digest): gcr.io/cloud-builders/docker
+The push refers to repository [europe-west1-docker.pkg.dev/funnelcraft/cloud-run-source-deploy/googletest/googletest]
+cf0a63be60fb: Preparing
+6dffbed2e4a7: Preparing
+2186e44fb554: Preparing
+cdfa8a4e5d4d: Preparing
+e355cb440d20: Preparing
+4e21a0597624: Preparing
+32db015bbd31: Preparing
+766774fbaa7a: Preparing
+eadc3b779d42: Preparing
+2e12e022f9bc: Preparing
+54e9a650f7b7: Preparing
+418dccb7d85a: Preparing
+4e21a0597624: Waiting
+32db015bbd31: Waiting
+766774fbaa7a: Waiting
+eadc3b779d42: Waiting
+2e12e022f9bc: Waiting
+54e9a650f7b7: Waiting
+418dccb7d85a: Waiting
+6dffbed2e4a7: Pushed
+e355cb440d20: Pushed
+2186e44fb554: Pushed
+cdfa8a4e5d4d: Pushed
+eadc3b779d42: Layer already exists
+2e12e022f9bc: Layer already exists
+54e9a650f7b7: Layer already exists
+418dccb7d85a: Layer already exists
+766774fbaa7a: Pushed
+32db015bbd31: Pushed
+cf0a63be60fb: Pushed
+4e21a0597624: Pushed
+af92c17687f01c8b664619e6de7d33bed40ac952: digest: sha256:33dcabbc401f4fe93aadce6511e8ff8e0901908c7cb57714694e5052f1e9429e size: 2837
+Finished Step #1 - "Push"
+Starting Step #2 - "Deploy"
+Pulling image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+slim: Pulling from google.com/cloudsdktool/cloud-sdk
+0873b8cf69e3: Pulling fs layer
+0ecc3efdf0c4: Pulling fs layer
+5442d93bf902: Pulling fs layer
+b2911410f8c8: Pulling fs layer
+b2911410f8c8: Waiting
+0ecc3efdf0c4: Verifying Checksum
+0ecc3efdf0c4: Download complete
+b2911410f8c8: Verifying Checksum
+b2911410f8c8: Download complete
+0873b8cf69e3: Verifying Checksum
+0873b8cf69e3: Download complete
+0873b8cf69e3: Pull complete
+0ecc3efdf0c4: Pull complete
+5442d93bf902: Verifying Checksum
+5442d93bf902: Download complete
+5442d93bf902: Pull complete
+b2911410f8c8: Pull complete
+Digest: sha256:73906ef0503c3f0d7f32eae1ceb855cae80774d0fafcead5097f42285a8a86d9
+Status: Downloaded newer image for gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+Deploying...
+Creating Revision.............................................................failed
+Deployment failed
+ERROR: (gcloud.run.services.update) Revision 'googletest-00005-h9x' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+Logs URL: https://console.cloud.google.com/logs/viewer?project=funnelcraft&resource=cloud_run_revision/service_name/googletest/revision_name/googletest-00005-h9x&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22googletest%22%0Aresource.labels.revision_name%3D%22googletest-00005-h9x%22 
+For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+Finished Step #2 - "Deploy"
+ERROR
+ERROR: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk:slim" failed: step exited with non-zero status: 1
