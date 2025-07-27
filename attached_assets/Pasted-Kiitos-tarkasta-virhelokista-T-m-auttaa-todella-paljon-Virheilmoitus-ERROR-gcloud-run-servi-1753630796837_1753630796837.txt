@@ -1,0 +1,66 @@
+Kiitos tarkasta virhelokista! Tämä auttaa todella paljon.
+
+Virheilmoitus: ERROR: (gcloud.run.services.update) Revision 'googletest-00005-h9x' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout.
+
+Tämä on erittäin yleinen virhe Cloud Runissa ja se tarkoittaa seuraavaa:
+
+Sovelluksesi ei kuuntele oikeaa porttia: Kun Cloud Run käynnistää konttori, se odottaa, että sovelluksesi alkaa kuunnella saapuvia pyyntöjä tietyssä portissa. Tämä portti määritellään PORT -ympäristömuuttujan avulla, ja oletusarvoisesti se on 8080 .
+Käynnistymisongelma: Kontti käynnistyy, mutta Cloud Runin terveyspalvelin (health check) ei saa vastausta sovelluksestasi odotetun ajan kuluessa tai odotetusta portista. Tämä saa Cloud Runin päättelemään, että kontti ei ole valmis käsittelemään liikennettä.
+Mitä sinun tulee tehdä:
+
+Sinun on varmistettava, että sovelluksesi kuuntelee HTTP-pyyntöjä portissa, jonka PORT -ympäristömuuttuja määrittää. Cloud Run asettaa tämän ympäristömuuttujan automaattisesti konttiin.
+
+Tyypillisiä ratkaisuja kielellisestä riippuen:
+
+Python (Flask/Django/FastAPI):
+Varmista, että sovelluksesi kuuntelee ympäristömuuttujan PORT määrittämässä portissa. Esimerkiksi Flask-sovelluksessa tämä voidaan tehdä näin:
+import os
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello, Cloud Run!'
+
+if __name__ == '__main__':
+
+Generated code may be subject to license restrictions not shown here. Use code with care. Learn more 
+
+Tärkeää on myös, että sovellus kuuntelee osoitteessa 0.0.0.0 , ei esimerkiksi 127.0.0.1 (localhost), koska Cloud Runissa kontti on erillinen ympäristö.
+Node.js (Express):
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 8080; // Käytä PORT-ympäristömuuttujaa
+
+app.get('/', (req, res) => {
+  res.send('Hello, Cloud Run!');
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+
+Generated code may be subject to license restrictions not shown here. Use code with care. Learn more 
+
+Go:
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+)
+
+func main() {
+
+Generated code may be subject to license restrictions not shown here. Use code with care. Learn more 
+
+Muita tarkistettavia asioita:
+
+Onko sovelluksesi käynnistyvä prosessi? Jotkut sovellukset saattavat suorittaa koodia ja sitten sulkeutua. Cloud Run odottaa, että kontissa on jatkuvasti käynnissä oleva prosessi, joka kuuntelee pyyntöjä.
+Onko Dockerfile oikein? Varmista, että Dockerfile suorittaa oikean komennon, joka käynnistää sovelluksesi ja saa sen kuuntelemaan porttia. Esimerkiksi CMD tai ENTRYPOINT -käsky.
+Tarkista konttilokit: Lokilinkin avulla: https://console.cloud.google.com/logs/viewer?project=funnelcraft&resource=cloud_run_revision/service_name/googletest/revision_name/googletest-00005-h9x&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22googletest%22%0Aresource.labels.revision_name%3D%22googletest-00005-h9x%22
+Tarkista, tulostaako sovelluksesi mitään tietoa käynnistyksensä aikana. Onko siellä virheilmoituksia, jotka estävät sovellusta käynnistymästä kunnolla?
+Etsi rivejä, jotka kertovat, missä portissa sovellus yrittää kuunnella (esim. "Server listening on port 8080").
+Keskity ensisijaisesti siihen, että sovelluksesi koodi lukee PORT -ympäristömuuttujan ja käyttää sitä kuunteluporttina, ja että se kuuntelee 0.0.0.0 -osoitteessa. Kerro, jos tarvitset lisää apua koodiesimerkkien kanssa tai kun olet tarkistanut konttilokit!
