@@ -1,0 +1,40 @@
+Kiitos lokiviestistä! Tämä on hyvä uutinen, vaikka virhe toistuikin.
+
+Tämä lokiviesti tarkoittaa seuraavaa:
+
+Cloud Build -rakennus onnistui: Se, että pääsit takaisin tähän virheeseen, tarkoittaa, että npm run build -vaihe, jossa home.tsx -tiedoston syntaksivirhe kaatoi rakennuksen, on nyt korjattu! Eli kontti-image on rakennettu ja siirretty onnistuneesti. Tämä on suuri edistysaskel!
+Palasimme alkuperäiseen ongelmaan: Nyt ongelma on taas siinä, että Cloud Run -palvelu yrittää ottaa käyttöön uuden revision (tässä tapauksessa googletest-00009-vj6 ), mutta kontti ei käynnisty ja ala kuunnella porttia 8080 määritellyn aikarajan sisällä.
+Virheilmoitus on siis sama kuin ensimmäinen, jonka lähetit minulle:
+
+ERROR: (gcloud.run.services.update) Revision 'googletest-00009-vj6' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout.
+
+Mitä tämä tarkoittaa ja miten edetään:
+
+Tämä virhe johtuu siitä, että kontti käynnistyy, mutta sovellus sen sisällä ei ala kuunnella saapuvia HTTP-pyyntöjä PORT -ympäristömuuttujan määrittämässä portissa (oletusarvoisesti 8080) tai ei reagoi Cloud Runin terveyspalvelun tarkistuksiin riittävän nopeasti.
+
+Seuraavat ja tärkeimmät askeleet:
+
+Siirry Cloud Runin konttilokeihin: Lokilinkki on tässä viestissäsi:
+https://console.cloud.google.com/logs/viewer?project=funnelcraft&resource=cloud_run_revision/service_name/googletest/revision_name/googletest-00009-vj6&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22googletest%22%0Aresource.labels.revision_name%3D%22googletest-00009-vj6%22 Tämä on nyt avainasemassa! Tässä lokissa näet, mitä sovelluksesi tulostaa kontissa käynnistyksen aikana.
+Etsi virheilmoituksia tai poikkeuksia, jotka osoittavat, miksi sovelluksesi ei käynnisty tai kaatuu.
+Tarkista, yrittääkö sovelluksesi kuunnella oikeaa porttia (8080) ja osoitetta ( 0.0.0.0 ).
+Näetkö mitään viestejä, jotka viittaavat puuttuviin tiedostoihin, ympäristömuuttujiin, tai muihin käynnistysongelmiin?
+Tarkista sovelluksen koodi uudelleen: Varmista, että palvelimesi koodi (esim. Node.js Express, Python Flask/Django jne.) lukee PORT -ympäristömuuttujan ja käyttää sitä.
+Node.js (tyypillinen tapa):
+const port = process.env.PORT || 8080; // Lue PORT-ympäristömuuttuja
+app.listen(port, '0.0.0.0', () => { // Kuuntele 0.0.0.0 -osoitteessa
+  console.log(`Server listening on port ${port}`);
+});
+Generated code may be subject to license restrictions not shown here. Use code with care. Learn more 
+
+Python (tyypillinen tapa Flaskilla):
+import os
+# ...
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 8080))
+    app.run(debug=True, host='0.0.0.0', port=port)
+Generated code may be subject to license restrictions not shown here. Use code with care. Learn more 
+
+Varmista, että palvelin ei sammu heti: Sovelluksesi on ylläpidettävä aktiivista HTTP-kuuntelua, ei vain suorittaa jotain koodia ja sammua.
+Kun olet tutkinut lokit linkin takaa, kopioi ja liitä tänne kaikki merkitykselliset virheet tai viimeiset rivit, jotka näkyvät ennen kuin kontti sammuu. Niiden avulla voimme selvittää, mikä nyt on vialla!
+
